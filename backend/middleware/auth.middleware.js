@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import { db } from "../src/libs/db.js"
+import { db } from "../src/libs/db.js";
 
-export const   authMiddleware = async (req, res, next) => {
+export const authMiddleware = async (req, res, next) => {
   try {
     const token = req.cookies.jwt;
     if (!token) {
@@ -47,3 +47,30 @@ export const   authMiddleware = async (req, res, next) => {
     });
   }
 };
+
+export const chekAdmin = async (req, res, next) => { 
+  try {
+    const userId = req.user.id;
+    const user = await db.user.findUnique({
+      where: {
+        id: userId
+      },
+      select: {
+        role:true
+      }
+    })
+    if (!user || user.role !== "ADMIN") { 
+      return res.status(401).json({
+        success: false,
+        message: "unauthorized access"
+      })
+    }
+    next();
+  } catch (error) {
+    console.log("error in the auth mdiddleware admin checking", error);
+    return req.status(500).json({
+      success: false,
+      message:"Internal server error in the admin checkiing"
+    })
+  }
+}

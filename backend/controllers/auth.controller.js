@@ -123,8 +123,8 @@ export const logout = async (req, res) => {
     }
  }
 export const check = async (req, res) => {
-
     try {
+
         return res.status(200).json({
             success: true,
             message: "User is authenticated successfully",
